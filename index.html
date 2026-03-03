@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo: Hello Hand</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --primary: #6366f1;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* --- PANTALLA INICIAL RESPONSIVA --- */
+        #setup-screen { 
+            text-align: center; 
+            padding: 40px 20px; 
+            width: 90%; /* Se ajusta al ancho de la ventana */
+            max-width: 800px; /* Pero no crece infinitamente */
+        }
+        
+        /* Grid flexible: se ajusta automáticamente al tamaño de la ventana */
+        .lang-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .lang-btn {
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lang-btn.selected {
+            border-color: var(--primary);
+            background-color: #eef2ff;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+        }
+
+        .flag-large { font-size: 2.5rem; line-height: 1; }
+        .lang-name { font-weight: bold; color: #475569; }
+
+        #start-btn {
+            padding: 18px 60px;
+            font-size: 1.2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            max-width: 300px;
+        }
+        #start-btn.ready { opacity: 1; pointer-events: auto; }
+
+        /* --- INTERFAZ DE JUEGO --- */
+        #game-screen { display: none; width: 100%; flex-direction: column; align-items: center; }
+
+        .game-header {
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        .progress-container { text-align: center; flex-grow: 1; }
+        .progress-text { font-weight: bold; font-size: 0.9rem; color: var(--primary); margin-bottom: 4px; }
+        .progress-bar-bg { width: 200px; height: 10px; background: #e2e8f0; border-radius: 10px; margin: 0 auto; overflow: hidden; }
+        #progress-fill { width: 0%; height: 100%; background: var(--primary); transition: width 0.5s ease; }
+
+        .game-board {
+            display: flex;
+            gap: 20px;
+            padding: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .column-container { min-width: 150px; text-align: center; }
+        .column-header { font-size: 1.8rem; margin-bottom: 10px; }
+
+        .card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .card.correct { background: var(--correct); border-color: #059669; color: white; pointer-events: none; }
+        .card.wrong { background: var(--wrong); border-color: #b91c1c; color: white; }
+        .card.hidden { opacity: 0; pointer-events: none; transform: scale(0.9); transition: all 0.4s; }
+
+        /* --- BARAJA --- */
+        .deck-area {
+            padding: 30px;
+            background: white;
+            display: flex;
+            justify-content: center;
+            border: 2px solid #e2e8f0;
+            margin-top: auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .target-card {
+            width: 260px;
+            padding: 30px;
+            border: 4px solid var(--primary);
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        .target-card::before {
+            content: "🇪🇸 ESPAÑOL";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        #deck-target { font-size: 2.2rem; font-weight: 800; }
+        
+        .footer-copyright {
+            padding: 20px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="setup-screen">
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Hello Hand</h1>
+        <p>Elige los idiomas para la partida:</p>
+        <div class="lang-grid" id="lang-selector"></div>
+        <button id="start-btn">¡Empezar Juego!</button>
+    </div>
+
+    <div id="game-screen">
+        <div class="game-header">
+            <button onclick="exitGame()" style="border:none; background:none; cursor:pointer; font-weight:bold; color:#64748b;">← SALIR</button>
+            <div class="progress-container">
+                <div class="progress-text" id="progress-label">Palabra 1 de 5</div>
+                <div class="progress-bar-bg">
+                    <div id="progress-fill"></div>
+                </div>
+            </div>
+            <div style="width: 60px;"></div>
+        </div>
+
+        <div class="game-board" id="board"></div>
+
+        <div class="deck-area">
+            <div class="target-card">
+                <div id="deck-target">---</div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-copyright">
+        &copy; 2026 Hello Hand. Todos los derechos reservados. Desarrollado por Jorge Bobrek.
+    </footer>
+
+    <script>
+        const languages = {
+            zh: { name: "Chino", flag: "🇨🇳" },
+            it: { name: "Italiano", flag: "🇮🇹" },
+            de: { name: "Alemán", flag: "🇩🇪" },
+            ja: { name: "Japonés", flag: "🇯🇵" },
+            ar: { name: "Árabe", flag: "🇸🇦" },
+            pt: { name: "Portugués", flag: "🇧🇷" },
+            en: { name: "Inglés", flag: "🇺🇸" },
+            fr: { name: "Francés", flag: "🇫🇷" }
+        };
+
+        const database = [
+            { id: 1, es: "Amor", zh: {w:"爱", p:"ài"}, it: {w:"Amore", p:"a-mo-re"}, de: {w:"Liebe", p:"lee-be"}, ja: {w:"愛", p:"ai"}, ar: {w:"حب", p:"hub"}, pt: {w:"Amor", p:"a-mor"}, en: {w:"Love", p:"lov"}, fr: {w:"Amour", p:"a-mur"} },
+            { id: 2, es: "Agua", zh: {w:"水", p:"shuǐ"}, it: {w:"Acqua", p:"ak-ua"}, de: {w:"Wasser", p:"vas-er"}, ja: {w:"水", p:"mizu"}, ar: {w:"ماء", p:"ma'"}, pt: {w:"Água", p:"a-gua"}, en: {w:"Water", p:"wa-ter"}, fr: {w:"Eau", p:"o"} },
+            { id: 3, es: "Amigo", zh: {w:"朋友", p:"péngyǒu"}, it: {w:"Amico", p:"a-mi-ko"}, de: {w:"Freund", p:"froind"}, ja: {w:"友達", p:"tomodachi"}, ar: {w:"صديق", p:"sa-diq"}, pt: {w:"Amigo", p:"a-mi-go"}, en: {w:"Friend", p:"frend"}, fr: {w:"Ami", p:"a-mi"} },
+            { id: 4, es: "Hijo", zh: {w:"儿子", p:"érzi"}, it: {w:"Figlio", p:"fi-lio"}, de: {w:"Sohn", p:"zoon"}, ja: {w:"息子", p:"musuko"}, ar: {w:"ابn", p:"ibn"}, pt: {w:"Filho", p:"fi-liu"}, en: {w:"Son", p:"san"}, fr: {w:"Fils", p:"fis"} },
+            { id: 5, es: "Llamada", zh: {w:"通话", p:"tōnghuà"}, it: {w:"Chiamata", p:"kia-ma-ta"}, de: {w:"Anruf", p:"an-ruf"}, ja: {w:"電話", p:"den-wa"}, ar: {w:"مكالمة", p:"mu-ka-la-ma"}, pt: {w:"Chamada", p:"sha-ma-da"}, en: {w:"Call", p:"kol"}, fr: {w:"Appel", p:"a-pel"} }
+        ];
+
+        let selectedLangs = [];
+        let currentTarget = null;
+        let progress = {};
+        let deck = [...database];
+
+        const selector = document.getElementById('lang-selector');
+        Object.keys(languages).forEach(key => {
+            const btn = document.createElement('button');
+            btn.className = 'lang-btn';
+            btn.innerHTML = `<span class="flag-large">${languages[key].flag}</span><span class="lang-name">${languages[key].name}</span>`;
+            btn.onclick = () => {
+                btn.classList.toggle('selected');
+                if(selectedLangs.includes(key)) selectedLangs = selectedLangs.filter(l => l !== key);
+                else selectedLangs.push(key);
+                document.getElementById('start-btn').className = selectedLangs.length > 0 ? 'ready' : '';
+            };
+            selector.appendChild(btn);
+        });
+
+        function startGame() {
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            
+            selectedLangs.forEach(lang => {
+                const colWrap = document.createElement('div');
+                colWrap.className = 'column-container';
+                colWrap.innerHTML = `<div class="column-header">${languages[lang].flag}</div>`;
+                
+                const col = document.createElement('div');
+                [...database].sort(() => Math.random() - 0.5).forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.id = `c-${lang}-${item.id}`;
+                    card.innerHTML = `<b>${item[lang].w}</b><br><small style="opacity:0.6">${item[lang].p}</small>`;
+                    card.onclick = () => {
+                        if(item.id === currentTarget.id) {
+                            card.classList.add('correct');
+                            progress[lang] = true;
+                            checkWin();
+                        } else {
+                            card.classList.add('wrong');
+                            setTimeout(() => card.classList.remove('wrong'), 500);
+                        }
+                    };
+                    col.appendChild(card);
+                });
+                colWrap.appendChild(col);
+                board.appendChild(colWrap);
+            });
+            draw();
+        }
+
+        function draw() {
+            if(deck.length === 0) {
+                document.getElementById('deck-target').innerText = "🏆 ¡LISTO!";
+                return;
+            }
+            currentTarget = deck[Math.floor(Math.random() * deck.length)];
+            document.getElementById('deck-target').innerText = currentTarget.es;
+            selectedLangs.forEach(l => progress[l] = false);
+            updateProgressUI();
+        }
+
+        function updateProgressUI() {
+            const currentIdx = database.length - deck.length + 1;
+            const total = database.length;
+            document.getElementById('progress-label').innerText = `Palabra ${currentIdx} de ${total}`;
+            document.getElementById('progress-fill').style.width = `${(currentIdx / total) * 100}%`;
+        }
+
+        function checkWin() {
+            if(selectedLangs.every(l => progress[l])) {
+                setTimeout(() => {
+                    document.querySelectorAll(`[id$="-${currentTarget.id}"]`).forEach(c => c.classList.add('hidden'));
+                    deck = deck.filter(d => d.id !== currentTarget.id);
+                    draw();
+                }, 600);
+            }
+        }
+
+        function exitGame() { location.reload(); }
+        document.getElementById('start-btn').onclick = startGame;
+    </script>
+</body>
+</html>
