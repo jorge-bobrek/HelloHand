@@ -1,0 +1,13 @@
+#root {
+  width: 100%;
+  align-items: center;
+  overflow-x: hidden !important;
+}
+:root {
+  width: 100%;
+  --bg-color: #f8fafc;
+  --primary: #6366f1;
+  --correct: #10b981;
+  --wrong: #ef4444;
+  --text-main: #1e293b;
+}
