@@ -2,19 +2,31 @@ name: Deploy Hello Hand
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v5
 
-      - name: Copiar archivos al servidor
+      - name: Install Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Build project
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy in Oracle Cloud
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "."
+          source: "dist/*"
           target: "/var/www/hellohand/"
+          strip_components: 1
