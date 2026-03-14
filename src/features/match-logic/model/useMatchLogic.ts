@@ -1,0 +1,46 @@
+import { useState, useCallback } from 'react';
+import type { Word, LanguageKey } from '@/entities/word/';
+
+interface MatchState {
+  progress: Record<string, boolean>;
+  wrongCard: { id: number; lang: string } | null;
+}
+
+export const useMatchLogic = (selectedLangs: LanguageKey[]) => {
+  const [state, setState] = useState<MatchState>({
+    progress: {},
+    wrongCard: null,
+  });
+
+  const checkMatch = useCallback((
+    clickedId: number, 
+    clickedLang: string, 
+    targetWord: Word
+  ) => {
+    // 1. ¿Es la palabra correcta?
+    if (clickedId === targetWord.id) {
+      const newProgress = { ...state.progress, [clickedLang]: true };
+      
+      setState(prev => ({ ...prev, progress: newProgress }));
+
+      // 2. ¿Completó todos los idiomas de esta palabra?
+      const isWordComplete = selectedLangs.every(lang => newProgress[lang]);
+      
+      return { isCorrect: true, isWordComplete };
+    }
+
+    // 3. Si se equivoca, activamos el error visual temporalmente
+    setState(prev => ({ ...prev, wrongCard: { id: clickedId, lang: clickedLang } }));
+    setTimeout(() => setState(prev => ({ ...prev, wrongCard: null })), 500);
+    
+    return { isCorrect: false, isWordComplete: false };
+  }, [state.progress, selectedLangs]);
+
+  const resetProgress = (langs: LanguageKey[]) => {
+    const initialProgress: Record<string, boolean> = {};
+    langs.forEach(l => initialProgress[l] = false);
+    setState({ progress: initialProgress, wrongCard: null });
+  };
+
+  return { ...state, checkMatch, resetProgress };
+};

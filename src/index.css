@@ -3,11 +3,24 @@
   align-items: center;
   overflow-x: hidden !important;
 }
+
 :root {
   width: 100%;
   --bg-color: #f8fafc;
-  --primary: #6366f1;
+  --primary: #ff8800;
   --correct: #10b981;
   --wrong: #ef4444;
   --text-main: #1e293b;
+}
+
+body {
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--text-main);
 }
