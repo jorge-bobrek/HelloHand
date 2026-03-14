@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { Word, LanguageKey } from '@/entities/word/';
+import { audioPlayer } from '@/shared/lib';
 
 interface MatchState {
   progress: Record<string, boolean>;
@@ -17,19 +18,19 @@ export const useMatchLogic = (selectedLangs: LanguageKey[]) => {
     clickedLang: string, 
     targetWord: Word
   ) => {
-    // 1. ¿Es la palabra correcta?
     if (clickedId === targetWord.id) {
+      audioPlayer.success();
+
       const newProgress = { ...state.progress, [clickedLang]: true };
       
       setState(prev => ({ ...prev, progress: newProgress }));
 
-      // 2. ¿Completó todos los idiomas de esta palabra?
       const isWordComplete = selectedLangs.every(lang => newProgress[lang]);
       
       return { isCorrect: true, isWordComplete };
     }
+    audioPlayer.error();
 
-    // 3. Si se equivoca, activamos el error visual temporalmente
     setState(prev => ({ ...prev, wrongCard: { id: clickedId, lang: clickedLang } }));
     setTimeout(() => setState(prev => ({ ...prev, wrongCard: null })), 500);
     
