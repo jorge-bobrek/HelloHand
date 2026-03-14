@@ -9,9 +9,10 @@ interface GamePageProps {
   wordDatabase: Word[];
   selectedLangs: LanguageKey[];
   onExit: () => void;
+  onFinish: () => void;
 }
 
-export const GamePage: React.FC<GamePageProps> = ({ wordDatabase, selectedLangs, onExit }) => {
+export const GamePage: React.FC<GamePageProps> = ({ wordDatabase, selectedLangs, onExit, onFinish }) => {
   const [deck, setDeck] = useState<Word[]>(wordDatabase);
   const [currentTarget, setCurrentTarget] = useState<Word | null>(null);
   const [matchedIds, setMatchedIds] = useState<number[]>([]);
@@ -46,6 +47,7 @@ export const GamePage: React.FC<GamePageProps> = ({ wordDatabase, selectedLangs,
           resetProgress(selectedLangs);
         } else {
           setCurrentTarget(null);
+          onFinish();
         }
       }, 600);
     }

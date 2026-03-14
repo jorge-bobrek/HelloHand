@@ -15,6 +15,10 @@ class AudioPlayer {
     this.play('/sounds/wrong.mp3');
   }
 
+  victory() {
+    this.play('/sounds/victory.mp3');
+  }
+  
 }
 
 export const audioPlayer = new AudioPlayer();
