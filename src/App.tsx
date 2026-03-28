@@ -1,47 +1,40 @@
 import { useState } from 'react';
-import { HomePage } from '@/pages/home-page';
+import { LobbyPage } from '@/pages/lobby-page';
 import { GamePage } from '@/pages/game-page';
 import { VictoryPage } from '@/pages/victory-page';
-import { wordDatabase, type LanguageKey } from '@/entities/word';
+import { wordDatabase } from '@/entities/word';
+import type { GameConfig } from '@/entities/game';
 
-type AppView = 'home' | 'game' | 'victory';
+type AppView = 'lobby' | 'game' | 'victory';
 
 function App() {
-  const [view, setView] = useState<AppView>('home');
-  const [selectedLangs, setSelectedLangs] = useState<LanguageKey[]>([]);
+  const [view, setView] = useState<AppView>('lobby');
+  const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
 
-  const handleStartGame = (langs: LanguageKey[]) => {
-    setSelectedLangs(langs);
+  const handleStartGame = (config: GameConfig) => {
+    setGameConfig(config);
     setView('game');
-  };
-
-  const handleGameFinished = () => {
-    setView('victory');
-  };
-
-  const handleBackToHome = () => {
-    setView('home');
   };
 
   return (
     <div className="app">
-      {view === 'home' && (
-        <HomePage onStart={handleStartGame} />
+      {view === 'lobby' && (
+        <LobbyPage onStartGame={handleStartGame} />
       )}
       
-      {view === 'game' && (
+      {view === 'game' && gameConfig && (
         <GamePage 
           wordDatabase={wordDatabase} 
-          selectedLangs={selectedLangs} 
-          onExit={() => setView('home')}
-          onFinish={handleGameFinished}
+          selectedLangs={gameConfig.languages} 
+          onExit={() => setView('lobby')}
+          onFinish={() => setView('victory')}
         />
       )}
 
       {view === 'victory' && (
         <VictoryPage 
           onPlayAgain={() => setView('game')}
-          onExit={handleBackToHome}
+          onExit={() => setView('lobby')}
         />
       )}
     </div>

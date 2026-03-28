@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Header, Button, ProgressBar } from '@/shared/ui';
+import { Header, Button, ProgressBar, Container } from '@/shared/ui';
 import { useMatchLogic } from '@/features/match-logic';
 import { WordCard, languages, generateGameLayout } from '@/entities/word';
 import type { Word, LanguageKey } from '@/entities/word';
@@ -71,7 +71,7 @@ return (
         }
       />
 
-      <main className={styles.scrollableMain}>
+      <Container>
         <div className={styles.board}>
           {selectedLangs.map(lang => (
             <div key={lang} className={styles.column}>
@@ -98,7 +98,7 @@ return (
             </div>
           ))}
         </div>
-      </main>
+      </Container>
 
       {currentTarget && (
         <section className={styles.deckArea}>

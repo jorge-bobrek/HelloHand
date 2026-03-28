@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Header, Container, Button } from '@/shared/ui';
+import { Header, Container, Button, Footer } from '@/shared/ui';
 import { languages, LanguageCard } from '@/entities/word';
 import type { LanguageKey } from '@/entities/word';
 import styles from './HomePage.module.css';
@@ -47,7 +47,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onStart }) => {
         </Container>
       </main>
 
-      <section className={styles.footerArea}>
+      <Footer>
         <Button 
           disabled={selected.length === 0}
           isReady={selected.length > 0}
@@ -56,7 +56,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onStart }) => {
         >
           ¡Empezar Juego!
         </Button>
-      </section>
+      </Footer>
     </div>
   );
 };

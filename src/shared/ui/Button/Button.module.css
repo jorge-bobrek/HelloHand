@@ -21,9 +21,20 @@
 
 .secondary {
     background: transparent;
-    color: #64748b;
+    color: var(--primary);
     padding: 0;
     font-size: 0.8rem;
     opacity: 1;
     pointer-events: auto;
+}
+
+.disabled {
+    background: transparent;
+    color: #94a3b8;
+    padding: 0;
+    font-size: 0.8rem;
+    opacity: 1;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: grayscale(0.8);
 }

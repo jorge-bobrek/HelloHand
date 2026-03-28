@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+    animation: fadeIn 0.8s ease-out;
+    text-align: center;
+}
+
+.logoArea {
+    text-align: center;
+}
+
+.logo {
+    width: 180px;
+}
+
+.gameTitle {
+    font-size: 3rem;
+    color: #1e293b;
+    margin: 10px 0;
+    letter-spacing: 4px;
+}
+
+.tagline {
+    color: #64748b;
+    font-style: italic;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+    padding: 10px 0;
+}
+
+.mainBtn { font-size: 1.2rem !important; padding: 20px !important; }

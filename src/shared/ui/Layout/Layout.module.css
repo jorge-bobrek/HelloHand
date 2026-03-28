@@ -1,24 +1,26 @@
 .container {
     width: 90%;
-    max-width: 700px;
     margin: 0 auto;
     padding: 0 20px;
+}
+
+.scrollableMain {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-gutter: stable;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .header {
-    width: 100%;
     background: white;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    padding: 20px 0;
-}
-
-.content {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-
-    padding: 0 20px;
-    margin: 0 auto;
+    padding: 20px 20px;
+    min-height: 36px;
 }
 
 .left {
@@ -31,4 +33,21 @@
 
 .right {
     justify-self: end;
+}
+
+.footer {
+    background: white;
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.1);
+    align-items: center;
+    display: flex;
+    padding: 30px 10px 20px 10px;
+    min-height: 36px;
+}
+
+.copyright {
+    position: absolute;
+    padding: 0px 10px;
+    font-size: 0.65rem;
+    color: #94a3b8;
+    user-select: none;
 }

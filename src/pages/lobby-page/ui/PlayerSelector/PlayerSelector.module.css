@@ -1,0 +1,54 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    animation: fadeIn 0.8s ease-out;
+    text-align: center;
+}
+
+.counterArea {
+    padding: 20px;
+    background: #f1f5f9;
+    border-radius: 16px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.counterLabel {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #1e293b;
+}
+
+.counterControls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 20px;
+}
+
+.counterBtn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6366f1;
+}
+
+.countNumber {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    min-width: 40px;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

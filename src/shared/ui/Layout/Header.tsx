@@ -10,11 +10,9 @@ type HeaderProps = {
 export const Header: React.FC<HeaderProps> = ({ left, center, right }) => {
   return (
    <header className={styles.header}>
-    <div className={styles.content}>
-      <div className={styles.left}>{left}</div>
-      <div className={styles.center}>{center}</div>
-      <div className={styles.right}>{right}</div>
-    </div>
+    <div className={styles.left}>{left}</div>
+    <div className={styles.center}>{center}</div>
+    <div className={styles.right}>{right}</div>
   </header>
   );
 };
